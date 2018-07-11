@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+	<html lang="en">
+
+    	<head>
+	        
+			<body type="original">
+	    	
+		    	<div>
+		    		
+		    		<center>
+
+		    			<br><br><img src="ETE-Logo-Circle-RGB-03.png" alt="Logo"><br>
+
+		    		</center>
+
+		    	</div>
+
+		    	<div>
+
+		    		<center>
+		    																								
+		    			<input id="promptField" value="Press clear to start scanning." type="focus" oninput ="allocateValue()">
+		    		
+		    			<input id="serialInputOne" onclick="document.getElementById('promptField').focus();" type="text"><br>
+		    		
+		    			<input id="serialInputTwo" onclick="document.getElementById('promptField').focus();" type="text"><br>
+
+		    			<input id="clear" onclick ="clearFields()"  type="submit" value="Clear">
+
+		    		</center>
+		    		
+		    	</div>
+
+	    	</body>
+
+	        <script type="text/javascript">
+
+
+	        	function allocateValue(){
+	        		// Timeout length (300) calibrated to how long the gun takes to register, at the moment, the longest string we handle: 8.  If we start using longer strings, setTimeout length should be adjusted accordingly.
+	        		setTimeout(function(){
+	        			let clearCode = 11212001;
+	        			if(filterNumbers(document.getElementById('promptField').value) === undefined){
+	        					return false;
+	        			} else if (filterNumbers(document.getElementById('promptField').value) === clearCode){
+	        				// 11212001 is the Clear bar code output. Length is intentionally longer then our longest serial code to prevent a highly unlikely match. If we start using longer strings, Clear code should also be extended.
+	        				clearFields();
+	        			} else {
+		        			let serial = filterNumbers(document.getElementById('promptField').value).toString();
+		        			let inputOne = document.getElementById('serialInputOne').value;
+		        			let inputTwo = document.getElementById('serialInputTwo').value;
+		        			let errorCode = '*';
+		        			if (inputOne === "") {
+		        				document.getElementById('serialInputOne').value = serial;
+		        				document.getElementById('promptField').value = 'Scan a matching serial number.';
+		        				return;
+		        			}else if(inputTwo === "" || document.getElementById('promptField').value[0] ===errorCode) {
+		        				// Using "*" as a condition helps future implementations.  If any additional unique errors need to be added, have it start with the asterisk. 
+		        				document.getElementById('serialInputTwo').value = serial;
+		        				inputTwo = serial;
+		        				checkFields(inputOne, inputTwo);
+		        			}else if(inputOne === inputTwo){
+		        				additionalCheckResetFields();
+		        			}
+	        			}
+	        		}, 300)
+	        	}
+
+	        	function checkFields(inputOne, inputTwo) {
+		        	if (inputOne === inputTwo) {
+		        		document.body.style.backgroundColor = "#27AE60";
+		        		document.getElementById('promptField').value = 'Match! A new process will automatically start when you scan again.';
+		        	}else{
+		        		document.body.style.backgroundColor = "#C9282E";
+		        		document.getElementById('promptField').value = '**Not a match. Either scan it\'s correct match, or Clear with the button or scan the Clear bar code.**';
+		        	}
+	        	}
+
+	        	function additionalCheckResetFields(){
+	        		document.getElementById('serialInputOne').value = filterNumbers(document.getElementById('promptField').value);
+	        		document.getElementById('promptField').value = 'Scan a matching serial number.';
+	        		document.getElementById('serialInputTwo').value = '';
+	        		document.body.style.backgroundColor = "#1B46A8";
+	        	}
+
+	        	function clearFields(){
+	        		document.getElementById('promptField').value = 'Start with your first serial number.';
+	        		document.getElementById('serialInputOne').value = '';
+	        		document.getElementById('serialInputTwo').value = '';
+	        		document.body.style.backgroundColor = "#1B46A8";
+	        		document.getElementById('promptField').focus();
+	        	}
+
+	        	function filterNumbers(field){
+	        		// returns a array, indexing each number. Since the none of the promptField values have numbers, it will only return one number: the serial input.
+	        		// if a promptField is ever changes where a number is involved, the serial is always located at the end of the field, thus the last index of numbers array
+	        		// is returned automatically.
+					if (!isNaN(field[field.length - 1])) {
+						let numbers = field.match(/\d+/g).map(Number);
+						return numbers[(numbers.length - 1)];
+					}
+	        	}
+	        	
+	        </script>
+
+    		<style type="text/css">
+	
+				input[type=text], select {
+				    padding: 10px 20px;
+				    margin: 30px;
+				    border: 6px solid #C9282E;
+				    border-radius: 400px;
+				    box-sizing: content-box;
+				    height: 180px;
+				    width: 72%;
+				    text-align: inherit;
+				    font-size: 135px;
+				    user-select: none;
+				}
+
+				input[type=submit] {
+				    width: 40%;
+				    height: 80px;
+				    background-color: #50505C;
+				    border: 6px solid #C9282E;
+				    border-radius: 20px;
+				    color: white;
+				    padding: 14px 20px;
+				    margin: 8px 0;
+				    cursor: pointer;
+				    font-size: 25px; 
+				}
+
+				input[type=focus]{
+				    padding: 10px 20px;
+				    margin: 30px;
+				    background-color: #50505C;
+				    border: 6px solid #C9282E;
+				    border-radius: 20px;
+				    color: white;
+				    box-sizing: content-box;
+				    height: 25px;
+				    width: 80%;
+				    text-align: center;
+				    font-size: 18px;
+				}
+
+				body[type=original]{
+					background-color: #1B46A8;
+				}
+
+				img{
+					height: 15%;
+					width: 15%;
+				}
+
+			</style>
+
+		</head>
+
+	    
+
+	</html>
